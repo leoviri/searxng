@@ -1,0 +1,16 @@
+use_default_settings: true
+
+search:
+  # Enable JSON format for API access
+  formats:
+    - html
+    - json
+
+server:
+  # Allow external connections
+  bind_address: "0.0.0.0:8080"
+  # Set a secret key
+  secret_key: "your-secret-key-here"
+
+general:
+  instance_name: "SearXNG MCP Server" 

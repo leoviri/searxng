@@ -1,0 +1,10 @@
+FROM searxng/searxng:latest
+
+# Copy production configuration
+COPY searxng-settings-production.yml /etc/searxng/settings.yml
+
+# Expose port (Railway will assign PORT env var)
+EXPOSE ${PORT:-8080}
+
+# Use Railway's PORT environment variable
+CMD ["searxng-run"] 

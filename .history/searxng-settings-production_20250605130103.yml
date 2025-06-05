@@ -1,0 +1,41 @@
+use_default_settings: true
+
+general:
+  instance_name: "SearXNG MCP Server"
+  # Use Railway's environment for debug mode
+  debug: false
+
+search:
+  # Enable JSON format for MCP API access
+  formats:
+    - html
+    - json
+  # Production search settings
+  safe_search: 0
+  autocomplete: "duckduckgo"
+
+server:
+  # Railway assigns PORT automatically
+  port: ${PORT:-8080}
+  # Bind to all interfaces in production
+  bind_address: "0.0.0.0"
+  # Use Railway's secret key or fallback
+  secret_key: "${SEARXNG_SECRET_KEY:-your-production-secret-key-change-this}"
+  # Use Railway's base URL
+  base_url: "${SEARXNG_BASE_URL:-https://your-app.railway.app}"
+  # Enable image proxy for better performance
+  image_proxy: true
+  # Use HTTP/1.1 for better compatibility
+  http_protocol_version: "1.1"
+
+ui:
+  # Use hash for static files in production
+  static_use_hash: true
+  # Production theme settings
+  default_theme: simple
+  theme_args:
+    simple_style: auto
+
+# Disable Redis for simplicity (can be enabled later with Railway Redis addon)
+redis:
+  url: false 

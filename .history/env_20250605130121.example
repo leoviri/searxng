@@ -1,0 +1,12 @@
+# Railway Environment Variables for SearXNG MCP Server
+
+# SearXNG Configuration
+SEARXNG_SECRET_KEY=your-super-secret-key-here-change-this-in-production
+SEARXNG_BASE_URL=https://your-app-name.railway.app
+
+# MCP Server Configuration
+SEARXNG_URL=https://your-app-name.railway.app
+
+# Railway will automatically set these:
+# PORT=8080
+# RAILWAY_ENVIRONMENT=production 
