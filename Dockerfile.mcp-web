@@ -16,10 +16,11 @@ RUN pip install --no-cache-dir -r requirements-web.txt
 COPY searxng_mcp_web_server.py .
 
 # Expose port
-EXPOSE ${PORT:-8000}
+EXPOSE $PORT
 
-# Set environment variables
+# Set environment variables with defaults
 ENV SEARXNG_URL=${SEARXNG_URL:-http://localhost:8080}
+ENV PORT=${PORT:-8000}
 
 # Run the web server
 CMD ["python", "searxng_mcp_web_server.py"] 
