@@ -682,10 +682,9 @@
         if not searxng_url:
             searxng_url = "http://localhost:8080"
         
-            logger.info(f"Starting Enhanced SearXNG MCP Server v2.1.0 with backend: {searxng_url}")
-    logger.info("Supported search types: general, images, news, videos, science, advanced")
-    logger.info("Full SearXNG API parameter support enabled")
-    logger.info("Features: GET/POST requests, search operators, theme support, enhanced formatting")
+        logger.info(f"Starting Enhanced SearXNG MCP Server v2.0.0 with backend: {searxng_url}")
+        logger.info("Supported search types: general, images, news, videos, science")
+        logger.info("Full SearXNG API parameter support enabled")
         
         server = SearXNGMCPServer(searxng_url)
         await server.run()

@@ -514,7 +514,6 @@
         async def _perform_search(self, params: Dict[str, Any], max_results: int, search_type: str, use_post: bool = False) -> List[types.TextContent]:
                     """Perform the actual search request to SearXNG."""
         try:
-            # SearXNG supports both /search and / endpoints
             search_url = f"{self.searxng_url}/search"
             
             # Log the search parameters for debugging
@@ -662,7 +661,7 @@
                     write_stream,
                     InitializationOptions(
                         server_name="searxng-mcp",
-                        server_version="2.1.0",
+                        server_version="2.0.0",
                         capabilities=self.server.get_capabilities(
                             notification_options=NotificationOptions(),
                             experimental_capabilities={},
@@ -682,10 +681,9 @@
         if not searxng_url:
             searxng_url = "http://localhost:8080"
         
-            logger.info(f"Starting Enhanced SearXNG MCP Server v2.1.0 with backend: {searxng_url}")
-    logger.info("Supported search types: general, images, news, videos, science, advanced")
-    logger.info("Full SearXNG API parameter support enabled")
-    logger.info("Features: GET/POST requests, search operators, theme support, enhanced formatting")
+        logger.info(f"Starting Enhanced SearXNG MCP Server v2.0.0 with backend: {searxng_url}")
+        logger.info("Supported search types: general, images, news, videos, science")
+        logger.info("Full SearXNG API parameter support enabled")
         
         server = SearXNGMCPServer(searxng_url)
         await server.run()

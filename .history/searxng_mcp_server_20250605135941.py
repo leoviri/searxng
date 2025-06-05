@@ -23,10 +23,10 @@
     logger = logging.getLogger("searxng-mcp")
 
     class SearXNGMCPServer:
-    def __init__(self, searxng_url: str = "http://localhost:8080"):
-        self.searxng_url = searxng_url
-        self.server = Server("searxng-mcp")
-        self.setup_handlers()
+        def __init__(self, searxng_url: str = "http://localhost:8080"):
+            self.searxng_url = searxng_url
+            self.server = Server("searxng-mcp")
+            self.setup_handlers()
 
         def setup_handlers(self):
             @self.server.list_tools()
@@ -314,74 +314,11 @@
                                     "minimum": 1,
                                     "maximum": 30
                                 }
-                                                    },
-                        "required": ["query"]
-                    }
-                ),
-                types.Tool(
-                    name="advanced_search",
-                    description="Advanced search with explicit search operators and syntax support",
-                    inputSchema={
-                        "type": "object",
-                        "properties": {
-                            "query": {
-                                "type": "string",
-                                "description": "Advanced search query with operators (e.g., 'site:github.com python', '\"exact phrase\"', 'term1 OR term2')"
                             },
-                            "site": {
-                                "type": "string",
-                                "description": "Limit search to specific site (will add site: operator)"
-                            },
-                            "filetype": {
-                                "type": "string",
-                                "description": "Search for specific file types (will add filetype: operator)"
-                            },
-                            "exclude_terms": {
-                                "type": "array",
-                                "items": {"type": "string"},
-                                "description": "Terms to exclude from search (will add - operator)"
-                            },
-                            "exact_phrase": {
-                                "type": "string",
-                                "description": "Exact phrase to search for (will be quoted)"
-                            },
-                            "categories": {
-                                "type": "string",
-                                "description": "Search categories",
-                                "default": "general"
-                            },
-                            "engines": {
-                                "type": "string",
-                                "description": "Specific search engines to use"
-                            },
-                            "language": {
-                                "type": "string",
-                                "description": "Search language",
-                                "default": "en"
-                            },
-                            "time_range": {
-                                "type": "string",
-                                "description": "Time range filter",
-                                "enum": ["day", "month", "year"]
-                            },
-                            "safesearch": {
-                                "type": "integer",
-                                "description": "Safe search level",
-                                "enum": [0, 1, 2],
-                                "default": 0
-                            },
-                            "max_results": {
-                                "type": "integer",
-                                "description": "Maximum results to return",
-                                "default": 15,
-                                "minimum": 1,
-                                "maximum": 100
-                            }
-                        },
-                        "required": ["query"]
-                    }
-                )
-            ]
+                            "required": ["query"]
+                        }
+                    )
+                ]
 
             @self.server.call_tool()
             async def handle_call_tool(
@@ -400,12 +337,10 @@
                         return await self._search_news(arguments)
                     elif name == "search_videos":
                         return await self._search_videos(arguments)
-                                    elif name == "search_science":
-                    return await self._search_science(arguments)
-                elif name == "advanced_search":
-                    return await self._advanced_search(arguments)
-                else:
-                    raise ValueError(f"Unknown tool: {name}")
+                    elif name == "search_science":
+                        return await self._search_science(arguments)
+                    else:
+                        raise ValueError(f"Unknown tool: {name}")
                 except Exception as e:
                     logger.error(f"Error in tool {name}: {e}")
                     return [types.TextContent(
@@ -413,33 +348,33 @@
                         text=f"Error: {str(e)}"
                     )]
 
-            def _build_search_params(self, arguments: Dict[str, Any], default_categories: str = "general") -> Dict[str, Any]:
-        """Build search parameters from arguments, supporting all SearXNG API parameters."""
-        params = {
-            "q": arguments.get("query", ""),
-            "format": arguments.get("format", "json"),
-            "categories": arguments.get("categories", default_categories),
-            "language": arguments.get("language", "en")
-        }
-        
-        # Optional parameters - only add if provided
-        optional_params = [
-            "engines", "pageno", "time_range", "safesearch", 
-            "results_on_new_tab", "image_proxy", "autocomplete", "theme"
-        ]
-        
-        for param in optional_params:
-            if param in arguments and arguments[param] is not None:
-                params[param] = arguments[param]
-        
-        # Handle array parameters
-        array_params = ["enabled_plugins", "disabled_plugins", "enabled_engines", "disabled_engines"]
-        for param in array_params:
-            if param in arguments and arguments[param]:
-                # Convert array to comma-separated string
-                params[param] = ",".join(arguments[param])
-        
-        return params
+        def _build_search_params(self, arguments: Dict[str, Any], default_categories: str = "general") -> Dict[str, Any]:
+            """Build search parameters from arguments, supporting all SearXNG API parameters."""
+            params = {
+                "q": arguments.get("query", ""),
+                "format": arguments.get("format", "json"),
+                "categories": arguments.get("categories", default_categories),
+                "language": arguments.get("language", "en")
+            }
+            
+            # Optional parameters - only add if provided
+            optional_params = [
+                "engines", "pageno", "time_range", "safesearch", 
+                "results_on_new_tab", "image_proxy", "autocomplete"
+            ]
+            
+            for param in optional_params:
+                if param in arguments and arguments[param] is not None:
+                    params[param] = arguments[param]
+            
+            # Handle array parameters
+            array_params = ["enabled_plugins", "disabled_plugins", "enabled_engines", "disabled_engines"]
+            for param in array_params:
+                if param in arguments and arguments[param]:
+                    # Convert array to comma-separated string
+                    params[param] = ",".join(arguments[param])
+            
+            return params
 
         async def _search(self, arguments: Dict[str, Any]) -> List[types.TextContent]:
             """Perform a general web search with full parameter support."""
@@ -469,65 +404,24 @@
             
             return await self._perform_search(params, max_results, "Video Search")
 
-            async def _search_science(self, arguments: Dict[str, Any]) -> List[types.TextContent]:
-        """Perform a science/academic search."""
-        max_results = arguments.get("max_results", 10)
-        params = self._build_search_params(arguments, "science")
-        
-        return await self._perform_search(params, max_results, "Science Search")
-
-    async def _advanced_search(self, arguments: Dict[str, Any]) -> List[types.TextContent]:
-        """Perform an advanced search with enhanced query building."""
-        max_results = arguments.get("max_results", 15)
-        
-        # Build enhanced query with search operators
-        base_query = arguments.get("query", "")
-        query_parts = [base_query] if base_query else []
-        
-        # Add site restriction
-        if arguments.get("site"):
-            query_parts.append(f"site:{arguments['site']}")
-        
-        # Add filetype restriction
-        if arguments.get("filetype"):
-            query_parts.append(f"filetype:{arguments['filetype']}")
-        
-        # Add exact phrase
-        if arguments.get("exact_phrase"):
-            query_parts.append(f'"{arguments["exact_phrase"]}"')
-        
-        # Add excluded terms
-        if arguments.get("exclude_terms"):
-            for term in arguments["exclude_terms"]:
-                query_parts.append(f"-{term}")
-        
-        # Combine all query parts
-        enhanced_query = " ".join(query_parts)
-        
-        # Build search parameters
-        search_args = arguments.copy()
-        search_args["query"] = enhanced_query
-        params = self._build_search_params(search_args, arguments.get("categories", "general"))
-        
-        return await self._perform_search(params, max_results, "Advanced Search", use_post=True)
-
-        async def _perform_search(self, params: Dict[str, Any], max_results: int, search_type: str, use_post: bool = False) -> List[types.TextContent]:
-                    """Perform the actual search request to SearXNG."""
-        try:
-            # SearXNG supports both /search and / endpoints
-            search_url = f"{self.searxng_url}/search"
+        async def _search_science(self, arguments: Dict[str, Any]) -> List[types.TextContent]:
+            """Perform a science/academic search."""
+            max_results = arguments.get("max_results", 10)
+            params = self._build_search_params(arguments, "science")
             
-            # Log the search parameters for debugging
-            logger.info(f"Searching with params: {params} (method: {'POST' if use_post else 'GET'})")
-            
-            async with httpx.AsyncClient(timeout=30.0) as client:
-                if use_post:
-                    # Use POST request for advanced searches or when explicitly requested
-                    response = await client.post(search_url, data=params)
-                else:
-                    # Use GET request (default)
+            return await self._perform_search(params, max_results, "Science Search")
+
+        async def _perform_search(self, params: Dict[str, Any], max_results: int, search_type: str) -> List[types.TextContent]:
+            """Perform the actual search request to SearXNG."""
+            try:
+                search_url = f"{self.searxng_url}/search"
+                
+                # Log the search parameters for debugging
+                logger.info(f"Searching with params: {params}")
+                
+                async with httpx.AsyncClient(timeout=30.0) as client:
                     response = await client.get(search_url, params=params)
-                response.raise_for_status()
+                    response.raise_for_status()
                     
                     # Handle different response formats
                     content_type = response.headers.get("content-type", "").lower()
@@ -662,7 +556,7 @@
                     write_stream,
                     InitializationOptions(
                         server_name="searxng-mcp",
-                        server_version="2.1.0",
+                        server_version="2.0.0",
                         capabilities=self.server.get_capabilities(
                             notification_options=NotificationOptions(),
                             experimental_capabilities={},
@@ -682,10 +576,9 @@
         if not searxng_url:
             searxng_url = "http://localhost:8080"
         
-            logger.info(f"Starting Enhanced SearXNG MCP Server v2.1.0 with backend: {searxng_url}")
-    logger.info("Supported search types: general, images, news, videos, science, advanced")
-    logger.info("Full SearXNG API parameter support enabled")
-    logger.info("Features: GET/POST requests, search operators, theme support, enhanced formatting")
+        logger.info(f"Starting Enhanced SearXNG MCP Server v2.0.0 with backend: {searxng_url}")
+        logger.info("Supported search types: general, images, news, videos, science")
+        logger.info("Full SearXNG API parameter support enabled")
         
         server = SearXNGMCPServer(searxng_url)
         await server.run()
